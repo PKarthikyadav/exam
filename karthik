@@ -112,3 +112,43 @@ WHERE table_name='users'-- -
 ----------------------------------------------------------------------------
 
 
+cd /var/log
+ls
+Check login history:
+last
+View system logs:
+journalctl | less
+Check failed logins:
+journalctl | grep "Failed"
+Check SSH activity:
+journalctl | grep ssh
+Check errors:
+journalctl | grep -i error
+Check Apache logs:
+cd /var/log/apache2
+ls
+sudo less access.log
+Check suspicious web requests:
+grep "404" /var/log/apache2/access.log
+Check package activity:
+less /var/log/dpkg.log
+Monitor logs live:
+sudo journalctl -f
+If you want to simulate failed SSH attempts
+Install SSH server:
+sudo apt install openssh-server -y
+Start SSH:
+sudo service ssh start
+Try wrong login:
+ssh fakeuser@localhost
+Enter wrong password several times.
+Check failed password logs:
+journalctl | grep "Failed password"
+Extract IP:
+journalctl | grep "Failed password" | awk '{print $11}'
+Count attempts per IP:
+journalctl | grep "Failed password" | awk '{print $11}' | sort | uniq -c | sort -nr
+Check failed login database:
+sudo lastb
+
+
